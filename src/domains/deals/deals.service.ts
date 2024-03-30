@@ -5,9 +5,17 @@ import { PrismaService } from './../../db/prisma/prisma.service';
 export class DealsService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  getDeals() {
-    const deals = this.prismaService.product.findMany();
+  async getDeals() {
+    const deals = await this.prismaService.product.findMany();
 
     return deals;
+  }
+
+  async getDeal(dealId: number) {
+    const deal = await this.prismaService.product.findUnique({
+      where: { id: dealId },
+    });
+
+    return deal;
   }
 }
