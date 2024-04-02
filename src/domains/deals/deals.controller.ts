@@ -32,8 +32,8 @@ export class DealsController {
     return { deal };
   }
 
-  @LoggedInOnly()
   @Post('create')
+  @LoggedInOnly()
   async createDeal(@DUser() user: User, @Body() dto: CreateDealDto) {
     const deal = await this.dealsService.createDeal({
       ...dto,
