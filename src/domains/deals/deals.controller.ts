@@ -1,15 +1,17 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
 } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { LoggedInOnly } from 'src/decorators/loggedInOnly.decorator';
 import { DUser } from 'src/decorators/user.decorator';
-import { CreateDealDto } from './deals.dto';
+import { CreateDealDto, UpdateDealDto } from './deals.dto';
 import { DealsService } from './deals.service';
 
 @Controller('deals')
@@ -39,5 +41,32 @@ export class DealsController {
     });
 
     return { deal };
+  }
+
+  @Patch(':dealId/edit')
+  @LoggedInOnly()
+  async updateDeal(
+    @DUser() user: User,
+    @Body() dto: UpdateDealDto,
+    @Param('dealId', ParseIntPipe) dealId: number,
+  ) {
+    const updatedDeal = await this.dealsService.updateDeal(
+      { ...dto },
+      user.id,
+      dealId,
+    );
+
+    return { updatedDeal };
+  }
+
+  @Delete(':dealId/delete')
+  @LoggedInOnly()
+  async deleteDeal(
+    @DUser() user: User,
+    @Param('dealId', ParseIntPipe) dealId: number,
+  ) {
+    const deletedDeal = await this.dealsService.deleteDeal(user.id, dealId);
+
+    return { deletedDeal };
   }
 }

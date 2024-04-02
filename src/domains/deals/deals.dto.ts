@@ -5,3 +5,5 @@ export type CreateDealDto = {
   location: string;
   imgSrc?: string;
 };
+
+export type UpdateDealDto = CreateDealDto;
