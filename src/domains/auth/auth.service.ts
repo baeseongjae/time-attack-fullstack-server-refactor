@@ -32,7 +32,7 @@ export class AuthService {
 
     const accessToken = this.generateAccessToken(user);
 
-    return { accessToken };
+    return accessToken;
   }
 
   async logIn(userLogInDto: UserLogInDto) {
