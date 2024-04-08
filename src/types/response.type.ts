@@ -3,5 +3,3 @@ export type TResponse<T> = {
   result: T | null;
   message: string | null;
 };
-
-export type TExceptionResponse = string | { message: string; error?: string };
