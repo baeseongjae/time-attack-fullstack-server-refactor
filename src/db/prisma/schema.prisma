@@ -12,30 +12,33 @@ model User {
   email             String     @unique
   encryptedPassword String
   createdAt         DateTime   @default(now())
-  Interest          Interest[]
-  Product           Product[]
+  deals             Deal[]
+  interests         Interest[]
 }
 
-model Product {
-  id        Int        @id @default(autoincrement())
-  authorId  String
-  title     String
-  price     String
-  content   String
-  imgSrc    String?
-  location  String
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  views     Int        @default(0)
-  Interest  Interest[]
-  User      User       @relation(fields: [authorId], references: [id])
+model Deal {
+  id          Int        @id @default(autoincrement())
+  author      User       @relation(fields: [authorEmail], references: [email])
+  authorEmail String
+  title       String
+  content     String
+  price       String
+  location    String
+  imgSrc      String?
+  views       Int        @default(0)
+  interest    Int        @default(0)
+  interests   Interest[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }
 
 model Interest {
   id        Int      @id @default(autoincrement())
-  userId    String
-  productId Int
+  user      User     @relation(fields: [userEmail], references: [email])
+  userEmail String
+  deal      Deal     @relation(fields: [dealId], references: [id])
+  dealId    Int
   createdAt DateTime @default(now())
-  Product   Product  @relation(fields: [productId], references: [id])
-  User      User     @relation(fields: [userId], references: [id])
+
+  @@unique([dealId, userEmail])
 }

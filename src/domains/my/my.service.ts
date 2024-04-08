@@ -5,9 +5,9 @@ import { PrismaService } from './../../db/prisma/prisma.service';
 export class MyService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async getMyDeals(userId: string) {
-    const myDeals = await this.prismaService.product.findMany({
-      where: { authorId: userId },
+  async getMyDeals(userEmail: string) {
+    const myDeals = await this.prismaService.deal.findMany({
+      where: { authorEmail: userEmail },
     });
 
     return myDeals;

@@ -37,7 +37,7 @@ export class DealsController {
   async createDeal(@DUser() user: User, @Body() dto: CreateDealDto) {
     const deal = await this.dealsService.createDeal({
       ...dto,
-      authorId: user.id,
+      authorEmail: user.email,
     });
 
     return { deal };
@@ -52,7 +52,7 @@ export class DealsController {
   ) {
     const updatedDeal = await this.dealsService.updateDeal(
       { ...dto },
-      user.id,
+      user.email,
       dealId,
     );
 
@@ -65,7 +65,7 @@ export class DealsController {
     @DUser() user: User,
     @Param('dealId', ParseIntPipe) dealId: number,
   ) {
-    const deletedDeal = await this.dealsService.deleteDeal(user.id, dealId);
+    const deletedDeal = await this.dealsService.deleteDeal(user.email, dealId);
 
     return { deletedDeal };
   }

@@ -11,7 +11,7 @@ export class MyController {
   @Get('deals')
   @LoggedInOnly()
   async getMyDeals(@DUser() user: User) {
-    const myDeals = await this.myService.getMyDeals(user.id);
+    const myDeals = await this.myService.getMyDeals(user.email);
     return { myDeals };
   }
 }
