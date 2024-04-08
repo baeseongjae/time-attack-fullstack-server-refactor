@@ -1,4 +1,7 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
+import { User } from '@prisma/client';
+import { LoggedInOnly } from 'src/decorators/loggedInOnly.decorator';
+import { DUser } from 'src/decorators/user.decorator';
 import { UserLogInDto, UserSignUpDto } from './auth.dto';
 import { AuthService } from './auth.service';
 
@@ -18,5 +21,13 @@ export class AuthController {
     const accessToken = await this.authService.logIn(dto);
 
     return { accessToken };
+  }
+
+  @LoggedInOnly()
+  @Get('user-email')
+  async getUserByEmail(@DUser() user: User) {
+    const userByEmail = await this.authService.getUserByEmail(user.email);
+
+    return { userByEmail };
   }
 }

@@ -16,6 +16,7 @@ const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY as string;
 export class AuthService {
   constructor(private readonly prismaService: PrismaService) {}
 
+  // ** 회원가입
   async signUp(userSignUpDto: UserSignUpDto) {
     const { email, password } = userSignUpDto;
 
@@ -35,6 +36,7 @@ export class AuthService {
     return accessToken;
   }
 
+  // ** 로그인
   async logIn(userLogInDto: UserLogInDto) {
     const { email, password } = userLogInDto;
 
@@ -43,7 +45,7 @@ export class AuthService {
       select: { id: true, email: true, encryptedPassword: true },
     });
 
-    // 유저 없으면 에런
+    // 유저 없으면 에러
     if (!user) throw new NotFoundException('No user found');
 
     // 패스워드 틀리면 에러
@@ -55,6 +57,15 @@ export class AuthService {
     return accessToken;
   }
 
+  async getUserByEmail(email: string) {
+    const userByEmail = await this.prismaService.user.findUnique({
+      where: { email },
+    });
+
+    return userByEmail;
+  }
+
+  // ** accessToken 발급
   generateAccessToken(user: Pick<User, 'id' | 'email'>) {
     const { id: subject, email } = user;
 
