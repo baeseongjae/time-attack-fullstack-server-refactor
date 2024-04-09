@@ -30,12 +30,12 @@ export class DealsService {
 
   async updateDeal(
     data: Prisma.DealUncheckedUpdateInput,
-    userEmail: string,
+    authorEmail: string,
     dealId: number,
   ) {
     // 요청한 유저가 해당글의 작성자인지 확인
     const targetDeal = this.prismaService.deal.findUnique({
-      where: { authorEmail: userEmail, id: dealId },
+      where: { authorEmail, id: dealId },
     });
     // ㄴ 아니면 에러
     if (!targetDeal) throw new ForbiddenException();
@@ -49,9 +49,9 @@ export class DealsService {
     return updatedDeal;
   }
 
-  async deleteDeal(userEmail: string, dealId: number) {
+  async deleteDeal(authorEmail: string, dealId: number) {
     const targetDeal = this.prismaService.deal.findUnique({
-      where: { authorEmail: userEmail, id: dealId },
+      where: { authorEmail, id: dealId },
     });
 
     if (!targetDeal) throw new ForbiddenException();
@@ -61,5 +61,46 @@ export class DealsService {
     });
 
     return deleteDeal;
+  }
+
+  async toggleInterest({
+    userEmail,
+    dealId,
+  }: Prisma.InterestDealIdUserEmailCompoundUniqueInput) {
+    const interest = await this.prismaService.interest.findUnique({
+      where: { dealId_userEmail: { dealId, userEmail } },
+    });
+
+    // 이미 좋아요 되어있다면 취소.
+    if (interest) {
+      await this.prismaService.interest.delete({
+        where: { dealId_userEmail: { dealId, userEmail } },
+      });
+
+      return this.prismaService.deal.update({
+        where: { id: dealId },
+        data: {
+          interest: {
+            decrement: 1,
+          },
+        },
+      });
+    } else {
+      await this.prismaService.interest.create({
+        data: {
+          dealId,
+          userEmail,
+        },
+      });
+
+      return this.prismaService.deal.update({
+        where: { id: dealId },
+        data: {
+          interest: {
+            increment: 1,
+          },
+        },
+      });
+    }
   }
 }

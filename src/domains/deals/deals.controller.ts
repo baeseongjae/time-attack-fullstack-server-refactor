@@ -69,4 +69,18 @@ export class DealsController {
 
     return { deletedDeal };
   }
+
+  @Patch(':dealId/interest')
+  @LoggedInOnly()
+  async toggleInterest(
+    @DUser() user: User,
+    @Param('dealId', ParseIntPipe) dealId: number,
+  ) {
+    const updatedDeal = await this.dealsService.toggleInterest({
+      userEmail: user.email,
+      dealId: dealId,
+    });
+
+    return { updatedDeal };
+  }
 }
