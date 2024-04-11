@@ -83,4 +83,12 @@ export class DealsController {
 
     return { updatedDeal };
   }
+
+  @Patch(':dealId/views')
+  async updateViews(@Param('dealId', ParseIntPipe) dealId: number) {
+    const dealUpdatedViews = await this.dealsService.updateViews(dealId);
+    const updatedViews = dealUpdatedViews.views;
+
+    return { updatedViews };
+  }
 }

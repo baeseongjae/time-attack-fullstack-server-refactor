@@ -103,4 +103,19 @@ export class DealsService {
       });
     }
   }
+
+  async updateViews(dealId: number) {
+    const dealUpdatedViews = await this.prismaService.deal.update({
+      where: {
+        id: dealId,
+      },
+      data: {
+        views: {
+          increment: 1,
+        },
+      },
+    });
+
+    return dealUpdatedViews;
+  }
 }
