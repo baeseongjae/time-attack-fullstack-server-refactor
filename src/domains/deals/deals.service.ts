@@ -7,7 +7,11 @@ export class DealsService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async getDeals() {
-    const deals = await this.prismaService.deal.findMany();
+    const deals = await this.prismaService.deal.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
 
     return deals;
   }
