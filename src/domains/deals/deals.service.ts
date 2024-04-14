@@ -1,5 +1,8 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { writeFile } from 'fs/promises';
+import { nanoid } from 'nanoid';
+import { join } from 'path';
 import { PrismaService } from './../../db/prisma/prisma.service';
 
 @Injectable()
@@ -24,9 +27,30 @@ export class DealsService {
     return deal;
   }
 
-  async createDeal(data: Prisma.DealUncheckedCreateInput) {
+  async createDeal(
+    data: Prisma.DealUncheckedCreateInput,
+    image: Express.Multer.File,
+  ) {
+    const { title, content, location, price, authorEmail } = data;
+    const fileName = nanoid();
+    const extension = image.originalname.split('.').pop();
+    const path = join(
+      __dirname,
+      '../../../public/images',
+      `${fileName}.${extension}`,
+    );
+
+    await writeFile(path, image.buffer);
+
     const deal = await this.prismaService.deal.create({
-      data,
+      data: {
+        title,
+        content,
+        location,
+        price,
+        imgSrc: `/images/${fileName}.${extension}`, //이거 어케하지;;;;;
+        authorEmail,
+      },
     });
 
     return deal;

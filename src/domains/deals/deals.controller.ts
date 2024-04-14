@@ -7,7 +7,10 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { User } from '@prisma/client';
 import { LoggedInOnly } from 'src/decorators/loggedInOnly.decorator';
 import { DUser } from 'src/decorators/user.decorator';
@@ -34,11 +37,19 @@ export class DealsController {
 
   @Post('create')
   @LoggedInOnly()
-  async createDeal(@DUser() user: User, @Body() dto: CreateDealDto) {
-    const deal = await this.dealsService.createDeal({
-      ...dto,
-      authorEmail: user.email,
-    });
+  @UseInterceptors(FileInterceptor('image'))
+  async createDeal(
+    @DUser() user: User,
+    @Body() dto: CreateDealDto,
+    @UploadedFile() image: Express.Multer.File,
+  ) {
+    const deal = await this.dealsService.createDeal(
+      {
+        ...dto,
+        authorEmail: user.email,
+      },
+      image,
+    );
 
     return { deal };
   }
