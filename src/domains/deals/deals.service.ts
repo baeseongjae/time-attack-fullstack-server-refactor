@@ -62,14 +62,14 @@ export class DealsService {
     dealId: number,
   ) {
     // 요청한 유저가 해당글의 작성자인지 확인
-    const targetDeal = this.prismaService.deal.findUnique({
+    const targetDeal = await this.prismaService.deal.findUnique({
       where: { authorEmail, id: dealId },
     });
     // ㄴ 아니면 에러
     if (!targetDeal) throw new ForbiddenException();
 
     // ㄴ 맞다면 판매글 수정
-    const updatedDeal = this.prismaService.deal.update({
+    const updatedDeal = await this.prismaService.deal.update({
       where: { id: dealId },
       data,
     });
@@ -78,13 +78,13 @@ export class DealsService {
   }
 
   async deleteDeal(authorEmail: string, dealId: number) {
-    const targetDeal = this.prismaService.deal.findUnique({
+    const targetDeal = await this.prismaService.deal.findUnique({
       where: { authorEmail, id: dealId },
     });
 
     if (!targetDeal) throw new ForbiddenException();
 
-    const deleteDeal = this.prismaService.deal.delete({
+    const deleteDeal = await this.prismaService.deal.delete({
       where: { id: dealId },
     });
 
@@ -105,7 +105,7 @@ export class DealsService {
         where: { dealId_userEmail: { dealId, userEmail } },
       });
 
-      return this.prismaService.deal.update({
+      return await this.prismaService.deal.update({
         where: { id: dealId },
         data: {
           interest: {
@@ -121,7 +121,7 @@ export class DealsService {
         },
       });
 
-      return this.prismaService.deal.update({
+      return await this.prismaService.deal.update({
         where: { id: dealId },
         data: {
           interest: {

@@ -36,7 +36,7 @@ model Interest {
   id        Int      @id @default(autoincrement())
   user      User     @relation(fields: [userEmail], references: [email])
   userEmail String
-  deal      Deal     @relation(fields: [dealId], references: [id])
+  deal      Deal     @relation(fields: [dealId], references: [id], onDelete: Cascade)
   dealId    Int
   createdAt DateTime @default(now())
 
