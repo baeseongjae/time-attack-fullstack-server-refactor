@@ -56,15 +56,18 @@ export class DealsController {
 
   @Patch(':dealId/edit')
   @LoggedInOnly()
+  @UseInterceptors(FileInterceptor('image'))
   async updateDeal(
     @DUser() user: User,
     @Body() dto: UpdateDealDto,
     @Param('dealId', ParseIntPipe) dealId: number,
+    @UploadedFile() image: Express.Multer.File,
   ) {
     const updatedDeal = await this.dealsService.updateDeal(
       { ...dto },
       user.email,
       dealId,
+      image,
     );
 
     return { updatedDeal };

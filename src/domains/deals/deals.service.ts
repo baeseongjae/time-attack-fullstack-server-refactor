@@ -1,8 +1,6 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { writeFile } from 'fs/promises';
-import { nanoid } from 'nanoid';
-import { join } from 'path';
+import { getImgSrcFromFile } from 'src/utils/getImgSrcFromFile';
 import { PrismaService } from './../../db/prisma/prisma.service';
 
 @Injectable()
@@ -31,26 +29,18 @@ export class DealsService {
     data: Prisma.DealUncheckedCreateInput,
     image: Express.Multer.File,
   ) {
-    const { title, content, location, price, authorEmail } = data;
-    const fileName = nanoid();
-    const extension = image.originalname.split('.').pop();
-    const path = join(
-      __dirname,
-      '../../../public/images',
-      `${fileName}.${extension}`,
-    );
+    // *1. 이미지 처리
+    let imgSrc: string | undefined;
+    if (image) imgSrc = await getImgSrcFromFile(image);
 
-    await writeFile(path, image.buffer);
+    const createDealData = {
+      ...data,
+      ...(imgSrc && { imgSrc }),
+    };
 
+    // *2. 판매글 생성
     const deal = await this.prismaService.deal.create({
-      data: {
-        title,
-        content,
-        location,
-        price,
-        imgSrc: `/images/${fileName}.${extension}`, //이거 어케하지;;;;;
-        authorEmail,
-      },
+      data: createDealData,
     });
 
     return deal;
@@ -60,6 +50,7 @@ export class DealsService {
     data: Prisma.DealUncheckedUpdateInput,
     authorEmail: string,
     dealId: number,
+    image: Express.Multer.File,
   ) {
     // 요청한 유저가 해당글의 작성자인지 확인
     const targetDeal = await this.prismaService.deal.findUnique({
@@ -69,9 +60,18 @@ export class DealsService {
     if (!targetDeal) throw new ForbiddenException();
 
     // ㄴ 맞다면 판매글 수정
+    // *1. 이미지 처리
+    let imgSrc: string | undefined;
+    if (image) imgSrc = await getImgSrcFromFile(image);
+
+    const updateDealData = {
+      ...data,
+      ...(imgSrc && { imgSrc }),
+    };
+    // *2. 수정
     const updatedDeal = await this.prismaService.deal.update({
       where: { id: dealId },
-      data,
+      data: updateDealData,
     });
 
     return updatedDeal;
