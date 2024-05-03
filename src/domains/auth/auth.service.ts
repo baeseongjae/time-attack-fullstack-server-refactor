@@ -65,6 +65,12 @@ export class AuthService {
     return userByEmail;
   }
 
+  async refreshToken(user: User) {
+    const refreshedAccessToken = this.generateAccessToken(user);
+
+    return refreshedAccessToken;
+  }
+
   // ** accessToken 발급
   generateAccessToken(user: Pick<User, 'id' | 'email'>) {
     const { id: subject, email } = user;

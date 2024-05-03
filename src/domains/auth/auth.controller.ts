@@ -30,4 +30,12 @@ export class AuthController {
 
     return { userByEmail };
   }
+
+  @LoggedInOnly()
+  @Post('refresh-token')
+  async refreshToken(@DUser() user: User) {
+    const accessToken = await this.authService.refreshToken(user);
+
+    return { accessToken };
+  }
 }
