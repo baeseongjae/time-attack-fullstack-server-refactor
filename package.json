@@ -6,6 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "prebuild": "prisma generate",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
@@ -25,7 +26,7 @@
     "@nestjs/mapped-types": "*",
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/serve-static": "^4.0.2",
-    "@prisma/client": "^5.11.0",
+    "@prisma/client": "^5.13.0",
     "bcrypt": "^5.1.1",
     "jsonwebtoken": "^9.0.2",
     "nanoid": "^3.3.7",
